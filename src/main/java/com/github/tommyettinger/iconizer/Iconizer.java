@@ -1,16 +1,118 @@
 package com.github.tommyettinger.iconizer;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.Pixmap;
+import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Disposable;
+import com.badlogic.gdx.utils.NumberUtils;
+import com.badlogic.gdx.utils.ScreenUtils;
 
+import java.nio.ByteBuffer;
 import java.util.Objects;
 
-public final class Iconizer {
+public final class Iconizer implements Disposable {
     public TextureAtlas openmoji;
+    public Array<TextureAtlas.AtlasRegion> regions;
+    public SpriteBatch batch;
     public Iconizer(){
         openmoji = new TextureAtlas(Gdx.files.classpath("openmoji.atlas"), Gdx.files.classpath(""));
-        Array<TextureAtlas.AtlasRegion> regions = openmoji.getRegions();
+        regions = openmoji.getRegions();
+        batch = new SpriteBatch();
+    }
+
+    public Pixmap generate(int width, int height, Object... seeds){
+        long seed = scrambleAll(seeds);
+        float bgColor = hsl2rgb(
+                (seed & 63) / 64f,
+                (seed >>> 6 & 15) / 64f + 0.4f,
+                (seed >>> 10 & 63) / 128f + 0.3f,
+                1f);
+        float fgColor1 = hsl2rgb(
+                (seed + 16 + (seed >>> 12 & 32) & 63) / 64f,
+                (seed >>> 6 & 15) / 64f + 0.65f,
+                (seed >>> 10 & 63) / 256f + 0.6f,
+                1f);
+        float fgColor2 = hsl2rgb(
+                (seed + 16 + (seed >>> 12 & 32) + (seed >>> 17 & 3) & 63) / 64f,
+                (seed >>> 6 & 15) / 64f + 0.65f - 0.035f + (seed >>> 19 & 7) / 100f,
+                (seed >>> 10 & 63) / 256f + 0.6f - 0.05f + (seed >>> 22 & 15) / 150f,
+                1f);
+
+        long seed2 = scramble(seed);
+        TextureAtlas.AtlasRegion l = regions.get(confineUpperHalf(seed, regions.size / 3));
+        TextureAtlas.AtlasRegion m = regions.get(confineUpperHalf(seed2, regions.size / 3) + regions.size / 3);
+        TextureAtlas.AtlasRegion r = regions.get(confineLowerHalf(seed2, regions.size / 3) + regions.size * 2 / 3);
+        Color t = new Color();
+        Color.abgr8888ToColor(t, bgColor);
+
+        FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);
+        fb.begin();
+        ScreenUtils.clear(t);
+        batch.begin();
+
+        int third = l.originalWidth / 3, full = l.originalWidth;
+        float tf = width / 3f;
+
+        batch.setPackedColor(fgColor1);
+        batch.draw(l.getTexture(), 0, 0, tf, height, 0, 0, third, full);
+        batch.setPackedColor(fgColor2);
+        batch.draw(m.getTexture(), tf, 0, tf, height, third, 0, third, full);
+        batch.setPackedColor(fgColor1);
+        batch.draw(r.getTexture(), tf*2, 0, tf, height, third*2, 0, third, full);
+        batch.end();
+
+//                    pixmap = Pixmap.createFromFrameBuffer(0, 0, t.getWidth(), t.getHeight());
+        //// The above is equivalent to the following, but the above also fills the pixmap.
+        Pixmap pixmap = createFromFrameBuffer(0, 0, width, height);
+
+        fb.end();
+        fb.dispose();
+
+        return pixmap;
+    }
+
+    /**
+     * Converts the four HSLA components, each in the 0.0 to 1.0 range, to a packed float in RGBA format.
+     * @param h hue, from 0.0 to 1.0
+     * @param s saturation, from 0.0 to 1.0
+     * @param l lightness, from 0.0 to 1.0
+     * @param a alpha, from 0.0 to 1.0
+     * @return an RGBA-format packed float
+     */
+    public static float hsl2rgb(final float h, final float s, final float l, final float a){
+        float x = Math.min(Math.max(Math.abs(h * 6f - 3f) - 1f, 0f), 1f);
+        float y = h + (2f / 3f);
+        float z = h + (1f / 3f);
+        y -= (int)y;
+        z -= (int)z;
+        y = Math.min(Math.max(Math.abs(y * 6f - 3f) - 1f, 0f), 1f);
+        z = Math.min(Math.max(Math.abs(z * 6f - 3f) - 1f, 0f), 1f);
+        float v = (l + s * Math.min(l, 1f - l));
+        float d = 2f * (1f - l / (v + 1e-10f));
+        v *= 255f;
+        return NumberUtils.intBitsToFloat(
+                (int)(a * 127f) << 25
+                        | (int)(v * MathUtils.lerp(1f, z, d)) << 16
+                        | (int)(v * MathUtils.lerp(1f, y, d)) << 8
+                        | (int)(v * MathUtils.lerp(1f, x, d))
+        );
+    }
+
+
+    public static Pixmap createFromFrameBuffer(int x, int y, int w, int h) {
+        Gdx.gl.glPixelStorei(GL20.GL_PACK_ALIGNMENT, 1);
+        Pixmap pixmap = new Pixmap(new Gdx2DPixmap(w, h, Gdx2DPixmap.GDX2D_FORMAT_RGBA8888));
+        ByteBuffer pixels = pixmap.getPixels();
+        Gdx.gl.glReadPixels(x, y, w, h, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, pixels);
+        return pixmap;
     }
 
     public static long scramble(Object o) {
@@ -78,4 +180,18 @@ public final class Iconizer {
     }
 
 
+    /**
+     * Releases all resources of this object.
+     */
+    @Override
+    public void dispose() {
+        if(openmoji != null) {
+            openmoji.dispose();
+            openmoji = null;
+        }
+        if(batch != null) {
+            batch.dispose();
+            batch = null;
+        }
+    }
 }
