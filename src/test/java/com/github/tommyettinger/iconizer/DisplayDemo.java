@@ -41,7 +41,7 @@ public class DisplayDemo extends ApplicationAdapter {
     private Iconizer iconizer;
     public static void main(String[] arg) {
         Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-        config.setTitle("Color Wheel Demo");
+        config.setTitle("Random Icon Display Demo");
         config.setWindowedMode(SCREEN_WIDTH, SCREEN_HEIGHT);
         config.setIdleFPS(10);
         config.useVsync(true);
@@ -54,8 +54,14 @@ public class DisplayDemo extends ApplicationAdapter {
     @Override
     public void create() {
         iconizer = new Iconizer();
-        Pixmap b = iconizer.generate(72, 72, System.nanoTime());
-        blank = new Texture(b);
+        blank = new Texture(512, 512, Pixmap.Format.RGBA8888);
+        for (int x = 0; x < 4; x++) {
+            for (int y = 0; y < 4; y++) {
+                Pixmap b = iconizer.generate(128, 128, System.nanoTime() + x * 12345L + y);
+                blank.draw(b, x * 128, y * 128);
+                b.dispose();
+            }
+        }
 //        blank.draw(iconizer.generate(72, 72, System.nanoTime()), 0, 0);
         batch = new SpriteBatch(1000);
         screenView = new ScreenViewport();
@@ -90,7 +96,13 @@ public class DisplayDemo extends ApplicationAdapter {
             lastProcessedTime = TimeUtils.millis();
             if (input.isKeyPressed(Input.Keys.R)) // random
             {
-                blank.draw(iconizer.generate(72, 72, System.nanoTime()), 0, 0);
+                for (int x = 0; x < 4; x++) {
+                    for (int y = 0; y < 4; y++) {
+                        Pixmap b = iconizer.generate(128, 128, System.nanoTime() + x * 12345L + y);
+                        blank.draw(b, x * 128, y * 128);
+                        b.dispose();
+                    }
+                }
             }
         }
     }

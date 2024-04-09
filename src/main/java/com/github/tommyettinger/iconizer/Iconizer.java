@@ -32,24 +32,23 @@ public final class Iconizer implements Disposable {
         long seed = scrambleAll(seeds);
         float bgColor = hsl2rgb(
                 (seed & 63) / 64f,
-                (seed >>> 6 & 15) / 64f + 0.4f,
-                (seed >>> 10 & 63) / 128f + 0.3f,
+                (seed >>> 6 & 15) / 64f + 0.5f,
+                (seed >>> 10 & 63) / 128f + 0.2f,
                 1f);
         float fgColor1 = hsl2rgb(
                 (seed + 16 + (seed >>> 12 & 32) & 63) / 64f,
-                (seed >>> 6 & 15) / 64f + 0.65f,
-                (seed >>> 10 & 63) / 256f + 0.6f,
+                (seed >>> 6 & 15) / 150f + 0.9f,
+                (seed >>> 10 & 63) / 256f + 0.7f,
                 1f);
         float fgColor2 = hsl2rgb(
                 (seed + 16 + (seed >>> 12 & 32) + (seed >>> 17 & 3) & 63) / 64f,
-                (seed >>> 6 & 15) / 64f + 0.65f - 0.035f + (seed >>> 19 & 7) / 100f,
-                (seed >>> 10 & 63) / 256f + 0.6f - 0.05f + (seed >>> 22 & 15) / 150f,
+                (seed >>> 6 & 15) / 150f + 0.85f - 0.035f + (seed >>> 19 & 7) / 100f,
+                (seed >>> 10 & 63) / 256f + 0.65f - 0.05f + (seed >>> 22 & 15) / 150f,
                 1f);
 
         long seed2 = scramble(seed);
-        TextureAtlas.AtlasRegion l = regions.get(confineUpperHalf(seed, regions.size / 3));
-        TextureAtlas.AtlasRegion m = regions.get(confineUpperHalf(seed2, regions.size / 3) + regions.size / 3);
-        TextureAtlas.AtlasRegion r = regions.get(confineLowerHalf(seed2, regions.size / 3) + regions.size * 2 / 3);
+        TextureAtlas.AtlasRegion l = regions.get(confineLowerHalf(seed2, regions.size / 2));
+        TextureAtlas.AtlasRegion m = regions.get(confineUpperHalf(seed2, regions.size / 2) + regions.size / 2);
         Color t = new Color();
         Color.abgr8888ToColor(t, bgColor);
 
@@ -58,18 +57,17 @@ public final class Iconizer implements Disposable {
         ScreenUtils.clear(t);
         batch.begin();
 
-        int third = l.originalWidth / 3, full = l.originalWidth;
-        float tf = width / 3f;
+        int full = l.originalWidth;
+        float hf = width / 2f;
 
 //        batch.setPackedColor(fgColor1);
 //        batch.draw(l.getTexture(), 0, 0, width, height, l.getRegionX(), l.getRegionY(), full, full, false, true);
 
         batch.setPackedColor(fgColor1);
-        batch.draw(l.getTexture(), 0, 0, tf, height, l.getRegionX(), l.getRegionY(), third, full, false, true);
+        batch.draw(l.getTexture(), 0, 0, hf, height, l.getRegionX(), l.getRegionY(), l.originalWidth/2, full, false, true);
         batch.setPackedColor(fgColor2);
-        batch.draw(m.getTexture(), tf, 0, tf, height, m.getRegionX() + third, m.getRegionY(), third, full, false, true);
-        batch.setPackedColor(fgColor1);
-        batch.draw(r.getTexture(), tf*2, 0, tf, height, r.getRegionX() + third*2, r.getRegionY(), third, full, false, true);
+        batch.draw(m.getTexture(), hf, 0, hf, height, m.getRegionX() + l.originalWidth/2, m.getRegionY(), m.originalWidth/2, full, false, true);
+
         batch.end();
 
 //                    pixmap = Pixmap.createFromFrameBuffer(0, 0, t.getWidth(), t.getHeight());
