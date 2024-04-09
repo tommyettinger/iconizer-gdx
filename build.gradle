@@ -13,11 +13,8 @@ buildscript {
 apply plugin: 'java-library'
 apply plugin: 'com.vanniktech.maven.publish'
 
-//Obviously, change the next line to match your project name.
-def projectName = 'libgdx-library-template'
+def projectName = 'iconizer-gdx'
 
-//Change this to whatever Maven Central group you might publish to,
-//which is probably not this one if you aren't Tommy Ettinger.
 group 'com.github.tommyettinger'
 
 version "$VERSION_NAME" // You can set the version in gradle.properties .
