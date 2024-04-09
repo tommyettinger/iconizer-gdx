@@ -53,7 +53,7 @@ public final class Iconizer implements Disposable {
         Color t = new Color();
         Color.abgr8888ToColor(t, bgColor);
 
-        FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, width, height, false);
+        FrameBuffer fb = new FrameBuffer(Pixmap.Format.RGBA8888, Gdx.graphics.getBackBufferWidth(), Gdx.graphics.getBackBufferHeight(), false);
         fb.begin();
         ScreenUtils.clear(t);
         batch.begin();
@@ -61,12 +61,15 @@ public final class Iconizer implements Disposable {
         int third = l.originalWidth / 3, full = l.originalWidth;
         float tf = width / 3f;
 
+//        batch.setPackedColor(fgColor1);
+//        batch.draw(l.getTexture(), 0, 0, width, height, l.getRegionX(), l.getRegionY(), full, full, false, true);
+
         batch.setPackedColor(fgColor1);
-        batch.draw(l.getTexture(), 0, 0, tf, height, 0, 0, third, full);
+        batch.draw(l.getTexture(), 0, 0, tf, height, l.getRegionX(), l.getRegionY(), third, full, false, true);
         batch.setPackedColor(fgColor2);
-        batch.draw(m.getTexture(), tf, 0, tf, height, third, 0, third, full);
+        batch.draw(m.getTexture(), tf, 0, tf, height, m.getRegionX() + third, m.getRegionY(), third, full, false, true);
         batch.setPackedColor(fgColor1);
-        batch.draw(r.getTexture(), tf*2, 0, tf, height, third*2, 0, third, full);
+        batch.draw(r.getTexture(), tf*2, 0, tf, height, r.getRegionX() + third*2, r.getRegionY(), third, full, false, true);
         batch.end();
 
 //                    pixmap = Pixmap.createFromFrameBuffer(0, 0, t.getWidth(), t.getHeight());
