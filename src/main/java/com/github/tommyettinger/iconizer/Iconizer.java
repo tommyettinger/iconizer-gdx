@@ -4,16 +4,13 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.Pixmap;
-import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Gdx2DPixmap;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.graphics.glutils.FrameBuffer;
+import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.math.MathUtils;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Disposable;
-import com.badlogic.gdx.utils.NumberUtils;
-import com.badlogic.gdx.utils.ScreenUtils;
+import com.badlogic.gdx.utils.*;
 
 import java.nio.ByteBuffer;
 import java.util.Objects;
@@ -25,23 +22,81 @@ public final class Iconizer implements Disposable {
     public Iconizer(){
         openmoji = new TextureAtlas(Gdx.files.classpath("openmoji.atlas"), Gdx.files.classpath(""));
         regions = openmoji.getRegions();
-        batch = new SpriteBatch();
+        ShaderProgram shader = new ShaderProgram(
+                "attribute vec4 a_position;\n" +
+                "attribute vec4 a_color;\n" +
+                "attribute vec2 a_texCoord0;\n" +
+                "uniform mat4 u_projTrans;\n" +
+                "varying vec4 v_color;\n" +
+                "varying vec2 v_texCoords;\n" +
+                "\n" +
+                "void main()\n" +
+                "{\n" +
+                "   v_color = a_color;\n" +
+                "   v_color.a = v_color.a * (255.0/254.0);\n" +
+                "   v_texCoords = a_texCoord0;\n" +
+                "   gl_Position =  u_projTrans * a_position;\n" +
+                "}\n",
+
+                "#ifdef GL_ES\n" +
+                "#define LOWP lowp\n" +
+                "precision mediump float;\n" +
+                "#else\n" +
+                "#define LOWP \n" +
+                "#endif\n" +
+                "varying vec2 v_texCoords;\n" +
+                "varying LOWP vec4 v_color;\n" +
+                "uniform sampler2D u_texture;\n" +
+                "const float eps = 1.0e-10;\n" +
+                "vec4 rgb2hsl(vec4 c)\n" +
+                "{\n" +
+                "    const vec4 J = vec4(0.0, -1.0 / 3.0, 2.0 / 3.0, -1.0);\n" +
+                "    vec4 p = mix(vec4(c.bg, J.wz), vec4(c.gb, J.xy), step(c.b, c.g));\n" +
+                "    vec4 q = mix(vec4(p.xyw, c.r), vec4(c.r, p.yzx), step(p.x, c.r));\n" +
+                "    float d = q.x - min(q.w, q.y);\n" +
+                "    float l = q.x * (1.0 - 0.5 * d / (q.x + eps));\n" +
+                "    return vec4(abs(q.z + (q.w - q.y) / (6.0 * d + eps)), (q.x - l) / (min(l, 1.0 - l) + eps), l, c.a);\n" +
+                "}\n" +
+                "\n" +
+                "vec4 hsl2rgb(vec4 c)\n" +
+                "{\n" +
+                "    const vec4 K = vec4(1.0, 2.0 / 3.0, 1.0 / 3.0, 3.0);\n" +
+                "    vec3 p = abs(fract(c.x + K.xyz) * 6.0 - K.www);\n" +
+                "    float v = (c.z + c.y * min(c.z, 1.0 - c.z));\n" +
+                "    return vec4(v * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), 2.0 * (1.0 - c.z / (v + eps))), c.w);\n" +
+                "}\n" +
+                "////Call this to go to the official HSL hue distribution (where blue is opposite yellow) from a\n" +
+                "////different distribution that matches primary colors in painting (where purple is opposite yellow).\n" +
+                "float primaries2official(float hue) {\n" +
+                "    return pow(hue * 0.8 + 0.225, 2.0) - 0.050625;\n" +
+                "}\n" +
+                "void main()\n" +
+                "{\n" +
+                "   vec4 tgt = texture2D( u_texture, v_texCoords );\n" +
+                "   vec4 hsl = rgb2hsl(tgt);\n" +
+                "   hsl.x = primaries2official(v_color.x);\n" +
+                "   hsl.y = v_color.y;\n" +
+                "   hsl.z *= v_color.z;\n" +
+                "   gl_FragColor = hsl2rgb(hsl);\n" +
+                "}");
+        if(!shader.isCompiled()) throw new GdxRuntimeException(shader.getLog());
+        batch = new SpriteBatch(1000, shader);
     }
 
     public Pixmap generate(int width, int height, Object... seeds){
         long seed = scrambleAll(seeds);
         float bgColor = hsl2rgb(
                 (seed & 63) / 64f,
-                (seed >>> 6 & 15) / 64f + 0.5f,
-                (seed >>> 10 & 63) / 128f + 0.2f,
+                (seed >>> 6 & 15) / 64f + 0.7f,
+                (seed >>> 10 & 63) / 150f + 0.2f,
                 1f);
-        float fgColor1 = hsl2rgb(
-                (seed + 16 + (seed >>> 12 & 32) & 63) / 64f,
+        float fgColor1 = Color.toFloatBits(
+                (seed + 24 + (seed >>> 11 & 16) & 63) / 64f,
                 (seed >>> 6 & 15) / 150f + 0.9f,
                 (seed >>> 10 & 63) / 256f + 0.7f,
                 1f);
-        float fgColor2 = hsl2rgb(
-                (seed + 16 + (seed >>> 12 & 32) + (seed >>> 17 & 3) & 63) / 64f,
+        float fgColor2 = Color.toFloatBits(
+                (seed + 24 + (seed >>> 11 & 16) + (seed >>> 17 & 3) & 63) / 64f,
                 (seed >>> 6 & 15) / 150f + 0.85f - 0.035f + (seed >>> 19 & 7) / 100f,
                 (seed >>> 10 & 63) / 256f + 0.65f - 0.05f + (seed >>> 22 & 15) / 150f,
                 1f);
@@ -60,9 +115,6 @@ public final class Iconizer implements Disposable {
         int full = l.originalWidth;
         float hf = width / 2f;
 
-//        batch.setPackedColor(fgColor1);
-//        batch.draw(l.getTexture(), 0, 0, width, height, l.getRegionX(), l.getRegionY(), full, full, false, true);
-
         batch.setPackedColor(fgColor1);
         batch.draw(l.getTexture(), 0, 0, hf, height, l.getRegionX(), l.getRegionY(), l.originalWidth/2, full, false, true);
         batch.setPackedColor(fgColor2);
@@ -80,6 +132,15 @@ public final class Iconizer implements Disposable {
         return pixmap;
     }
 
+    private static float primaries2official(float hue) {
+//        return    hue * (  0.677f
+//                + hue * ( -0.123f
+//                + hue * (-11.302f
+//                + hue * ( 46.767f
+//                + hue * (-58.493f
+//                + hue *   23.474f)))));
+        return (float) Math.pow(hue * 0.8f + 0.225f, 2f) - 0.050625f;
+    }
     /**
      * Converts the four HSLA components, each in the 0.0 to 1.0 range, to a packed float in RGBA format.
      * @param h hue, from 0.0 to 1.0
@@ -89,9 +150,10 @@ public final class Iconizer implements Disposable {
      * @return an RGBA-format packed float
      */
     public static float hsl2rgb(final float h, final float s, final float l, final float a){
-        float x = Math.min(Math.max(Math.abs(h * 6f - 3f) - 1f, 0f), 1f);
-        float y = h + (2f / 3f);
-        float z = h + (1f / 3f);
+        final float hue = primaries2official(h);
+        float x = Math.min(Math.max(Math.abs(hue * 6f - 3f) - 1f, 0f), 1f);
+        float y = hue + (2f / 3f);
+        float z = hue + (1f / 3f);
         y -= (int)y;
         z -= (int)z;
         y = Math.min(Math.max(Math.abs(y * 6f - 3f) - 1f, 0f), 1f);
