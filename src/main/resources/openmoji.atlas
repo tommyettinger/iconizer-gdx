@@ -362,56 +362,20 @@ black bird
 bounds:815,223,72,72
 black cat
 bounds:889,223,72,72
-black circle
-bounds:963,223,72,72
-black heart
-bounds:1037,223,72,72
-black hexagon
-bounds:1111,223,72,72
 black hole
 bounds:1185,223,72,72
-black large circle
-bounds:1259,223,72,72
-black large square
-bounds:1333,223,72,72
-black medium square
-bounds:1407,223,72,72
-black medium-small square
-bounds:1481,223,72,72
 black nib
 bounds:1555,223,72,72
-black octagon
-bounds:1629,223,72,72
-black pentagon
-bounds:1703,223,72,72
-black rectangle
-bounds:1777,223,72,72
-black small square
-bounds:1851,223,72,72
 black square button
 bounds:1925,223,72,72
 black star
 bounds:1999,223,72,72
-black vertical ellipse
-bounds:2073,223,72,72
-black vertical rectangle
-bounds:2147,223,72,72
 blood transfusion
 bounds:2221,223,72,72
 blossom
 bounds:2295,223,72,72
 blowfish
 bounds:2369,223,72,72
-blue book
-bounds:2443,223,72,72
-blue circle
-bounds:2517,223,72,72
-blue heart
-bounds:2591,223,72,72
-blue hexagon
-bounds:2665,223,72,72
-blue square
-bounds:2739,223,72,72
 blueberries
 bounds:2813,223,72,72
 boar
@@ -460,14 +424,6 @@ broken heart
 bounds:371,297,72,72
 broom
 bounds:445,297,72,72
-brown circle
-bounds:519,297,72,72
-brown heart
-bounds:593,297,72,72
-brown hexagon
-bounds:667,297,72,72
-brown square
-bounds:741,297,72,72
 bubble tea
 bounds:815,297,72,72
 bubbles
@@ -954,14 +910,10 @@ egg
 bounds:2221,593,72,72
 eiffel tower
 bounds:2295,593,72,72
-eight o'clock
-bounds:2369,593,72,72
 eight-pointed star
 bounds:2443,593,72,72
 eight-spoked asterisk
 bounds:2517,593,72,72
-eight-thirty
-bounds:2591,593,72,72
 eject button
 bounds:2665,593,72,72
 electric coffee percolator
@@ -974,10 +926,6 @@ elephant
 bounds:2961,593,72,72
 elevator
 bounds:3035,593,72,72
-eleven o'clock
-bounds:3109,593,72,72
-eleven-thirty
-bounds:3183,593,72,72
 elf
 bounds:3257,593,72,72
 emergency exit
@@ -1166,10 +1114,6 @@ fisheye
 bounds:1777,741,72,72
 fishing pole
 bounds:1851,741,72,72
-five o'clock
-bounds:1925,741,72,72
-five-thirty
-bounds:1999,741,72,72
 flamingo
 bounds:2073,741,72,72
 flashlight
@@ -1234,10 +1178,6 @@ fountain pen
 bounds:223,815,72,72
 four leaf clover
 bounds:297,815,72,72
-four o'clock
-bounds:371,815,72,72
-four-thirty
-bounds:445,815,72,72
 fox
 bounds:519,815,72,72
 fracture leg
@@ -1332,22 +1272,8 @@ grapes
 bounds:3849,815,72,72
 great pyramid of giza
 bounds:3923,815,72,72
-green apple
-bounds:3997,815,72,72
-green book
-bounds:1,889,72,72
-green circle
-bounds:75,889,72,72
-green heart
-bounds:149,889,72,72
-green hexagon
-bounds:223,889,72,72
 green salad
 bounds:297,889,72,72
-green square
-bounds:371,889,72,72
-grey heart
-bounds:445,889,72,72
 grimacing face
 bounds:519,889,72,72
 grinning cat
@@ -1470,10 +1396,6 @@ honeybee
 bounds:815,963,72,72
 hook
 bounds:889,963,72,72
-horizontal black hexagon 
-bounds:963,963,72,72
-horizontal black octagon
-bounds:1037,963,72,72
 horizontal traffic light
 bounds:1111,963,72,72
 horse
@@ -1578,20 +1500,8 @@ jack-o-lantern
 bounds:741,1037,72,72
 jar
 bounds:815,1037,72,72
-jar with blue content
-bounds:889,1037,72,72
-jar with brown content
-bounds:963,1037,72,72
-jar with green content
-bounds:1037,1037,72,72
-jar with orange content
-bounds:1111,1037,72,72
-jar with purple content
-bounds:1185,1037,72,72
 jar with red content
 bounds:1259,1037,72,72
-jar with yellow content
-bounds:1333,1037,72,72
 jeans
 bounds:1407,1037,72,72
 jellyfish
@@ -1670,12 +1580,8 @@ landslide
 bounds:75,1111,72,72
 laptop
 bounds:149,1111,72,72
-large blue diamond
-bounds:223,1111,72,72
 large intestine
 bounds:297,1111,72,72
-large orange diamond
-bounds:371,1111,72,72
 last quarter moon
 bounds:445,1111,72,72
 last quarter moon face
@@ -1722,8 +1628,6 @@ leopard
 bounds:1999,1111,72,72
 level slider
 bounds:2073,1111,72,72
-light blue heart
-bounds:2147,1111,72,72
 light bulb
 bounds:2221,1111,72,72
 light rail
@@ -2074,8 +1978,6 @@ microphone
 bounds:2073,1333,72,72
 microscope
 bounds:2147,1333,72,72
-middle finger
-bounds:2221,1333,72,72
 military helmet
 bounds:2295,1333,72,72
 military medal
@@ -2210,10 +2112,6 @@ next track button
 bounds:3035,1407,72,72
 night with stars
 bounds:3109,1407,72,72
-nine o'clock
-bounds:3183,1407,72,72
-nine-thirty
-bounds:3257,1407,72,72
 ninja
 bounds:3331,1407,72,72
 no bicycles
@@ -2290,12 +2188,8 @@ oncoming police car
 bounds:1925,1481,72,72
 oncoming taxi
 bounds:1999,1481,72,72
-one o'clock
-bounds:2073,1481,72,72
 one-piece swimsuit
 bounds:2147,1481,72,72
-one-thirty
-bounds:2221,1481,72,72
 onion
 bounds:2295,1481,72,72
 open book
@@ -2306,16 +2200,6 @@ open hands
 bounds:2517,1481,72,72
 optical disk
 bounds:2591,1481,72,72
-orange book
-bounds:2665,1481,72,72
-orange circle
-bounds:2739,1481,72,72
-orange heart
-bounds:2813,1481,72,72
-orange hexagon
-bounds:2887,1481,72,72
-orange square
-bounds:2961,1481,72,72
 orangutan
 bounds:3035,1481,72,72
 orca
@@ -2628,8 +2512,6 @@ pineapple
 bounds:1407,1703,72,72
 ping pong
 bounds:1481,1703,72,72
-pink heart
-bounds:1555,1703,72,72
 pizza
 bounds:1629,1703,72,72
 placard
@@ -2724,14 +2606,6 @@ printer
 bounds:889,1777,72,72
 prohibited
 bounds:963,1777,72,72
-purple circle
-bounds:1037,1777,72,72
-purple heart
-bounds:1111,1777,72,72
-purple hexagon
-bounds:1185,1777,72,72
-purple square
-bounds:1259,1777,72,72
 purse
 bounds:1333,1777,72,72
 pushpin
@@ -2764,8 +2638,6 @@ railway track
 bounds:2369,1777,72,72
 rainbow
 bounds:2443,1777,72,72
-rainbow hexagon
-bounds:2517,1777,72,72
 raised back of hand
 bounds:2591,1777,72,72
 raised fist
@@ -3038,10 +2910,6 @@ service dog
 bounds:297,1999,72,72
 service mark
 bounds:371,1999,72,72
-seven o'clock
-bounds:445,1999,72,72
-seven-thirty
-bounds:519,1999,72,72
 sewing needle
 bounds:593,1999,72,72
 shaking face
@@ -3090,10 +2958,6 @@ simple
 bounds:2221,1999,72,72
 singer
 bounds:2295,1999,72,72
-six o'clock
-bounds:2369,1999,72,72
-six-thirty
-bounds:2443,1999,72,72
 skateboard
 bounds:2517,1999,72,72
 skier
@@ -3122,10 +2986,6 @@ sloth
 bounds:3405,1999,72,72
 small airplane
 bounds:3479,1999,72,72
-small blue diamond
-bounds:3553,1999,72,72
-small orange diamond
-bounds:3627,1999,72,72
 smartwatch
 bounds:3701,1999,72,72
 smiling cat with heart-eyes
@@ -3412,10 +3272,6 @@ temperature taking
 bounds:1851,2221,72,72
 temple of artemis at ephesus
 bounds:1925,2221,72,72
-ten o'clock
-bounds:1999,2221,72,72
-ten-thirty
-bounds:2073,2221,72,72
 tennis
 bounds:2147,2221,72,72
 tent
@@ -3434,10 +3290,6 @@ thread
 bounds:2665,2221,72,72
 three finger operation
 bounds:2739,2221,72,72
-three o'clock
-bounds:2813,2221,72,72
-three-thirty
-bounds:2887,2221,72,72
 thumbs down
 bounds:2961,2221,72,72
 thumbs up
@@ -3516,18 +3368,10 @@ turkey
 bounds:1629,2295,72,72
 turtle
 bounds:1703,2295,72,72
-twelve o'clock
-bounds:1777,2295,72,72
-twelve-thirty
-bounds:1851,2295,72,72
 two hearts
 bounds:1925,2295,72,72
-two o'clock
-bounds:1999,2295,72,72
 two-hump camel
 bounds:2073,2295,72,72
-two-thirty
-bounds:2147,2295,72,72
 umbrella
 bounds:2221,2295,72,72
 umbrella on ground
@@ -3652,32 +3496,14 @@ wheelchair symbol
 bounds:2591,2369,72,72
 white cane
 bounds:2665,2369,72,72
-white circle
-bounds:2739,2369,72,72
 white exclamation mark
 bounds:2813,2369,72,72
 white flower
 bounds:2887,2369,72,72
-white heart
-bounds:2961,2369,72,72
-white hexagon
-bounds:3035,2369,72,72
-white large square
-bounds:3109,2369,72,72
-white medium square
-bounds:3183,2369,72,72
-white medium-small square
-bounds:3257,2369,72,72
 white pentagon
 bounds:3331,2369,72,72
 white question mark
 bounds:3405,2369,72,72
-white rectangle
-bounds:3479,2369,72,72
-white small square
-bounds:3553,2369,72,72
-white square
-bounds:3627,2369,72,72
 white square button
 bounds:3701,2369,72,72
 white vertical ellipse
@@ -3964,14 +3790,6 @@ yarn
 bounds:1851,2591,72,72
 yawning face
 bounds:1925,2591,72,72
-yellow circle
-bounds:1999,2591,72,72
-yellow heart
-bounds:2073,2591,72,72
-yellow hexagon
-bounds:2147,2591,72,72
-yellow square
-bounds:2221,2591,72,72
 yen banknote
 bounds:2295,2591,72,72
 yo-yo
