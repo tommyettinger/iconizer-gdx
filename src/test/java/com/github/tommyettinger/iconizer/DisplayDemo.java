@@ -45,7 +45,7 @@ public class DisplayDemo extends ApplicationAdapter {
         config.setWindowedMode(SCREEN_WIDTH, SCREEN_HEIGHT);
         config.setIdleFPS(10);
         config.useVsync(true);
-//        config.setResizable(false);
+        config.disableAudio(true);
 
         final DisplayDemo app = new DisplayDemo();
         new Lwjgl3Application(app, config);

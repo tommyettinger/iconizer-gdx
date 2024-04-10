@@ -1,5 +1,6 @@
 package com.github.tommyettinger.iconizer;
 
+import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
@@ -19,6 +20,13 @@ public final class Iconizer implements Disposable {
     public TextureAtlas openmoji;
     public Array<TextureAtlas.AtlasRegion> regions;
     public SpriteBatch batch;
+
+    /**
+     * Creates an Iconizer and loads its TextureAtlas from the classpath. This must be called
+     * during or after {@link ApplicationListener#create()} has been called by the framework.
+     * This cannot be run on a headless backend because it renders to a FrameBuffer using a
+     * shader, but it can be run on any other backend.
+     */
     public Iconizer(){
         openmoji = new TextureAtlas(Gdx.files.classpath("openmoji.atlas"), Gdx.files.classpath(""));
         regions = openmoji.getRegions();
@@ -65,16 +73,11 @@ public final class Iconizer implements Disposable {
                 "    float v = (c.z + c.y * min(c.z, 1.0 - c.z));\n" +
                 "    return vec4(v * mix(K.xxx, clamp(p - K.xxx, 0.0, 1.0), 2.0 * (1.0 - c.z / (v + eps))), c.w);\n" +
                 "}\n" +
-                "////Call this to go to the official HSL hue distribution (where blue is opposite yellow) from a\n" +
-                "////different distribution that matches primary colors in painting (where purple is opposite yellow).\n" +
-                "float primaries2official(float hue) {\n" +
-                "    return pow(hue * 0.8 + 0.225, 2.0) - 0.050625;\n" +
-                "}\n" +
                 "void main()\n" +
                 "{\n" +
                 "   vec4 tgt = texture2D( u_texture, v_texCoords );\n" +
                 "   vec4 hsl = rgb2hsl(tgt);\n" +
-                "   hsl.x = primaries2official(v_color.x);\n" +
+                "   hsl.x = (v_color.x);\n" +
                 "   hsl.y = v_color.y;\n" +
                 "   hsl.z *= v_color.z;\n" +
                 "   gl_FragColor = hsl2rgb(hsl);\n" +
@@ -83,8 +86,26 @@ public final class Iconizer implements Disposable {
         batch = new SpriteBatch(1000, shader);
     }
 
+    /**
+     * Hashes the given seeds and calls {@link #generate(int, int, long)} with the hashed seed.
+     * @param width the width in pixels of the Pixmap to produce
+     * @param height the height in pixels of the Pixmap to produce
+     * @param seeds will be hashed as a group using {@link #scrambleAll(Object...)}
+     * @return a new Pixmap generated using the given size and seed
+     */
     public Pixmap generate(int width, int height, Object... seeds){
-        long seed = scrambleAll(seeds);
+        return generate(width, height, scrambleAll(seeds));
+    }
+
+    /**
+     * Creates a new Pixmap with the given width and height, using the given long seed to randomly
+     * select colors and halves of icons to draw.
+     * @param width the width in pixels of the Pixmap to produce
+     * @param height the height in pixels of the Pixmap to produce
+     * @param seed a typically-unique long seed for random generation
+     * @return a new Pixmap generated using the given size and seed
+     */
+    public Pixmap generate(int width, int height, long seed){
         float bgColor = hsl2rgb(
                 (seed & 63) / 64f,
                 (seed >>> 6 & 15) / 64f + 0.7f,
@@ -92,13 +113,13 @@ public final class Iconizer implements Disposable {
                 1f);
         float fgColor1 = Color.toFloatBits(
                 (seed + 24 + (seed >>> 11 & 16) & 63) / 64f,
-                (seed >>> 6 & 15) / 150f + 0.9f,
-                (seed >>> 10 & 63) / 256f + 0.7f,
+                (seed >>> 17 & 15) / 100f + 0.85f,
+                (seed >>> 21 & 63) / 256f + 0.7f,
                 1f);
         float fgColor2 = Color.toFloatBits(
                 (seed + 24 + (seed >>> 11 & 16) + (seed >>> 17 & 3) & 63) / 64f,
-                (seed >>> 6 & 15) / 150f + 0.85f - 0.035f + (seed >>> 19 & 7) / 100f,
-                (seed >>> 10 & 63) / 256f + 0.65f - 0.05f + (seed >>> 22 & 15) / 150f,
+                (seed >>> 20 & 15) / 150f + 0.85f - 0.035f + (seed >>> 19 & 7) / 100f,
+                (seed >>> 24 & 63) / 256f + 0.65f - 0.05f + (seed >>> 22 & 15) / 150f,
                 1f);
 
         long seed2 = scramble(seed);
@@ -132,15 +153,6 @@ public final class Iconizer implements Disposable {
         return pixmap;
     }
 
-    private static float primaries2official(float hue) {
-//        return    hue * (  0.677f
-//                + hue * ( -0.123f
-//                + hue * (-11.302f
-//                + hue * ( 46.767f
-//                + hue * (-58.493f
-//                + hue *   23.474f)))));
-        return (float) Math.pow(hue * 0.8f + 0.225f, 2f) - 0.050625f;
-    }
     /**
      * Converts the four HSLA components, each in the 0.0 to 1.0 range, to a packed float in RGBA format.
      * @param h hue, from 0.0 to 1.0
@@ -150,10 +162,9 @@ public final class Iconizer implements Disposable {
      * @return an RGBA-format packed float
      */
     public static float hsl2rgb(final float h, final float s, final float l, final float a){
-        final float hue = primaries2official(h);
-        float x = Math.min(Math.max(Math.abs(hue * 6f - 3f) - 1f, 0f), 1f);
-        float y = hue + (2f / 3f);
-        float z = hue + (1f / 3f);
+        float x = Math.min(Math.max(Math.abs(h * 6f - 3f) - 1f, 0f), 1f);
+        float y = h + (2f / 3f);
+        float z = h + (1f / 3f);
         y -= (int)y;
         z -= (int)z;
         y = Math.min(Math.max(Math.abs(y * 6f - 3f) - 1f, 0f), 1f);
@@ -170,7 +181,7 @@ public final class Iconizer implements Disposable {
     }
 
 
-    public static Pixmap createFromFrameBuffer(int x, int y, int w, int h) {
+    private static Pixmap createFromFrameBuffer(int x, int y, int w, int h) {
         Gdx.gl.glPixelStorei(GL20.GL_PACK_ALIGNMENT, 1);
         Pixmap pixmap = new Pixmap(new Gdx2DPixmap(w, h, Gdx2DPixmap.GDX2D_FORMAT_RGBA8888));
         ByteBuffer pixels = pixmap.getPixels();
@@ -178,13 +189,37 @@ public final class Iconizer implements Disposable {
         return pixmap;
     }
 
+    /**
+     * Hashes {@code o} and scrambles the hash with {@link #scramble(long)}.
+     * @param o any Object; will be hashed with {@link Objects#hashCode(Object)}.
+     * @return the scrambled hash of o
+     */
     public static long scramble(Object o) {
         return scramble(Objects.hashCode(o));
     }
+
+    /**
+     * Scrambled and hashes o1 and o2 with {@link #scramble(long)}. More thorough than
+     * just calling (for example) {@link Objects#hash(Object...)} and scrambling that,
+     * since Objects.hash() can only return about 4 billion results, and this can return,
+     * in theory, over a billion times as many possible results.
+     * @param o1 any Object to hash with {@link Objects#hashCode(Object)}.
+     * @param o2 any Object to hash with {@link Objects#hashCode(Object)}.
+     * @return the scrambled hash
+     */
     public static long scramble(Object o1, Object o2) {
         return scramble(scramble(Objects.hashCode(o1)) + Objects.hashCode(o2));
     }
+
+    /**
+     * Scrambled and hashes every Object in {@code os}, using the previous hashes to
+     * modify the input to the next hash, and so on. Very likely to be able to return
+     * all 18 quintillion possible {@code long} hashes if given at least 3-4 objects.
+     * @param os an array or varargs of Object items of any type, including null
+     * @return the scrambled hash, or 0 if {@code os} is a null array
+     */
     public static long scrambleAll(Object... os) {
+        if(os == null) return 0L;
         long r = 0;
         for (int i = 0; i < os.length; i++) {
             r = scramble(Objects.hashCode(os[i]) + r);
