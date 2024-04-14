@@ -16,6 +16,12 @@ import com.badlogic.gdx.utils.*;
 import java.nio.ByteBuffer;
 import java.util.Objects;
 
+/**
+ * Loads an OpenMoji atlas when created, then allows icons to be generated with {@link #generate(int, int, long)}.
+ * The icons are randomized Pixmaps showing two OpenMoji icons (one on the left half, one on the right). The colors are
+ * all randomized. This renders to a framebuffer, so it uses OpenGL and as such cannot be used on the headless backend.
+ * You can only create an Iconizer after {@link ApplicationListener#create()} has been called by the framework.
+ */
 public final class Iconizer implements Disposable {
     public TextureAtlas openmoji;
     public Array<TextureAtlas.AtlasRegion> regions;
@@ -26,6 +32,9 @@ public final class Iconizer implements Disposable {
      * during or after {@link ApplicationListener#create()} has been called by the framework.
      * This cannot be run on a headless backend because it renders to a FrameBuffer using a
      * shader, but it can be run on any other backend.
+     * <br>
+     * This uses a shader to colorize the selected icons using HSL.
+     * <a href="https://gamedev.stackexchange.com/a/59808">Credit for most of the shader goes to Sam Hocevar</a>.
      */
     public Iconizer(){
         openmoji = new TextureAtlas(Gdx.files.classpath("openmoji.atlas"), Gdx.files.classpath(""));
@@ -106,20 +115,21 @@ public final class Iconizer implements Disposable {
      * @return a new Pixmap generated using the given size and seed
      */
     public Pixmap generate(int width, int height, long seed){
+        seed = scramble(seed);
         float bgColor = hsl2rgb(
-                (seed & 63) / 64f,
-                (seed >>> 6 & 15) / 64f + 0.7f,
-                (seed >>> 10 & 63) / 150f + 0.2f,
+                (seed & 62) / 64f, // 1-5
+                (seed >>> 6 & 15) / 64f + 0.7f, // 6-9
+                (seed >>> 10 & 63) / 150f + 0.2f, // 10-15
                 1f);
         float fgColor1 = Color.toFloatBits(
-                (seed + 24 + (seed >>> 11 & 16) & 63) / 64f,
-                (seed >>> 17 & 15) / 100f + 0.85f,
-                (seed >>> 21 & 63) / 256f + 0.7f,
+                ((seed >>> 47 & 62) + 1) / 64f, // 0-5 again and 48-53
+                (seed >>> 17 & 15) / 100f + 0.85f, // 17-20
+                (seed >>> 21 & 63) / 256f + 0.7f, // 21-26
                 1f);
         float fgColor2 = Color.toFloatBits(
-                (seed + 24 + (seed >>> 11 & 16) + (seed >>> 17 & 3) & 63) / 64f,
-                (seed >>> 20 & 15) / 150f + 0.85f - 0.035f + (seed >>> 19 & 7) / 100f,
-                (seed >>> 24 & 63) / 256f + 0.65f - 0.05f + (seed >>> 22 & 15) / 150f,
+                (((seed >>> 47 & 62) + 1) + (seed >>> 26 & 6) - 3 & 63) / 64f, // 0-5 and 46-47 again and 27-28
+                (seed >>> 29 & 15) / 150f + 0.85f - 0.035f + (seed >>> 33 & 7) / 100f, // 29-32 and 33-35
+                (seed >>> 36 & 63) / 256f + 0.6f - 0.05f + (seed >>> 42 & 15) / 150f, // 36-41 and 42-45
                 1f);
 
         long seed2 = scramble(seed);

@@ -1,6 +1,6 @@
 # iconizer-gdx
 
-Generate randomized icons using libGDX and OpenMoji
+Generate randomized icons using [libGDX](https://libgdx.com) and [OpenMoji](https://openmoji.org)
 
 ## Are the icons any good?
 
@@ -8,9 +8,11 @@ Not in the slightest.
 
 They look like this:
 
-![Sample 1](docs/2787200039900512181.png)
-![Sample 2](docs/4087292332260125602.png)
-![Sample 3](docs/7930579473366262530.png)
+![Sample 1](docs/6189721003066403328.png)
+![Sample 2](docs/6615691035041404532.png)
+![Sample 3](docs/-2366554332417775501.png)
+![Sample 4](docs/-8499300203011101396.png)
+![Sample 5](docs/-8541128500453779001.png)
 
 
 ## Why would I want to use this, then?
@@ -22,7 +24,7 @@ suspends apps (including their name and their icon) if they have the same icon o
 name as an existing app, so *you should really be putting in more effort before
 you submit to the Play Store*, but in case you don't, this acts as a safeguard. 
 
-## OK, you haven't convinced me. How do I use this?
+## OK, you convinced me. How do I use this?
 
 Really? OK, this goes in your core dependencies.
 
@@ -51,3 +53,4 @@ You will also need this GWT inherits line in your GdxDefinition.gwt.xml file:
 The code here is licensed under the [Apache License v2](LICENSE).
 
 The included OpenMoji are licensed under [CC-BY-SA 4.0](OpenMoji-LICENSE.txt).
+[The OpenMoji project site is here](https://openmoji.org).
