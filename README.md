@@ -29,7 +29,7 @@ you submit to the Play Store*, but in case you don't, this acts as a safeguard.
 Really? OK, this goes in your core dependencies.
 
 ```groovy
-implementation 'com.github.tommyettinger:iconizer-gdx:0.0.1'
+implementation 'com.github.tommyettinger:iconizer-gdx:0.0.2'
 ```
 
 This probably won't work if you're using GL30 compatibility mode; thankfully
@@ -39,7 +39,7 @@ This might work on GWT, but I'm not holding my breath. If GWT does work,
 then you would use this in your html dependencies:
 
 ```groovy
-implementation 'com.github.tommyettinger:iconizer-gdx:0.0.1:sources'
+implementation 'com.github.tommyettinger:iconizer-gdx:0.0.2:sources'
 ```
 
 You will also need this GWT inherits line in your GdxDefinition.gwt.xml file:
