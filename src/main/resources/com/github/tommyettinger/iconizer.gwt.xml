@@ -14,6 +14,6 @@
          like the libGDX reflection code. These "inherits" names are period-separated. -->
     <inherits name="com.badlogic.gdx.backends.gdx_backends_gwt" />
 
-    <extend-configuration-property name="gdx.files.classpath" value="openmoji.png" />
-    <extend-configuration-property name="gdx.files.classpath" value="openmoji.atlas" />
+    <extend-configuration-property name="gdx.files.classpath" value="OpenMoji.png" />
+    <extend-configuration-property name="gdx.files.classpath" value="OpenMoji.atlas" />
 </module>

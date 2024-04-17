@@ -37,7 +37,7 @@ public final class Iconizer implements Disposable {
      * <a href="https://gamedev.stackexchange.com/a/59808">Credit for most of the shader goes to Sam Hocevar</a>.
      */
     public Iconizer(){
-        openmoji = new TextureAtlas(Gdx.files.classpath("openmoji.atlas"), Gdx.files.classpath(""));
+        openmoji = new TextureAtlas(Gdx.files.classpath("OpenMoji.atlas"), Gdx.files.classpath(""));
         regions = openmoji.getRegions();
         ShaderProgram shader = new ShaderProgram(
                 "attribute vec4 a_position;\n" +
