@@ -745,17 +745,13 @@ public final class Iconizer {
         int bgColor = hsl2rgb(
                 (seed & 62) / 64f, // 1-5
                 (seed >>> 6 & 15) / 64f + 0.7f, // 6-9
-                (seed >>> 10 & 63) / 150f + 0.2f, // 10-15
+                (seed >>> 10 & 63) / 250f + 0.2f, // 10-15
                 1f);
-        int fgColor1 = hsl2rgb(
-                ((seed >>> 47 & 62) + 1) / 64f, // 0-5 again and 48-53
-                (seed >>> 17 & 15) / 100f + 0.85f, // 17-20
-                (seed >>> 21 & 63) / 256f + 0.7f, // 21-26
-                1f);
-        int fgColor2 = hsl2rgb(
-                (((seed >>> 47 & 62) + 1) + (seed >>> 26 & 6) - 3 & 63) / 64f, // 0-5 and 46-47 again and 27-28
-                (seed >>> 29 & 15) / 150f + 0.85f - 0.035f + (seed >>> 33 & 7) / 100f, // 29-32 and 33-35
-                (seed >>> 36 & 63) / 256f + 0.6f - 0.05f + (seed >>> 42 & 15) / 150f, // 36-41 and 42-45
+        // darker version of above
+        int bgColor2 = hsl2rgb(
+                (seed & 62) / 64f, // 1-5
+                (seed >>> 6 & 15) / 64f + 0.7f, // 6-9
+                (seed >>> 10 & 63) / 250f, // 10-15
                 1f);
 
         long seed2 = scramble(seed);
@@ -767,14 +763,24 @@ public final class Iconizer {
         o.setFilter(Pixmap.Filter.BiLinear);
         o.setColor(bgColor);
         o.fill();
-        o.setColor(-1);
+        o.setColor(bgColor2);
+        o.fillCircle(width / 2, height / 2, width / 4);
+
+        hsl2rgb(l,
+                ((seed >>> 47 & 62) + 1) / 64f, // 0-5 again and 48-53
+                (seed >>> 17 & 15) / 100f + 0.85f, // 17-20
+                (seed >>> 21 & 63) / 256f + 0.55f); // 21-26;
+        hsl2rgb(m,
+                (((seed >>> 47 & 62) + 1) + (seed >>> 26 & 6) - 3 & 63) / 64f, // 0-5 and 46-47 again and 27-28
+                (seed >>> 29 & 15) / 150f + 0.85f - 0.035f + (seed >>> 33 & 7) / 100f, // 29-32 and 33-35
+                (seed >>> 36 & 63) / 256f + 0.6f - 0.05f + (seed >>> 42 & 15) / 150f); // 36-41 and 42-45
+
+
 
         int full = l.getWidth();
         int hf = full / 2;
 
-        o.setColor(fgColor1);
         o.drawPixmap(l, 0, 0, hf, full, 0, 0, width/2, height);
-        o.setColor(fgColor2);
         o.drawPixmap(m, hf, 0, full, full, width/2, 0, width, height);
 
         return o;
@@ -807,13 +813,36 @@ public final class Iconizer {
         );
     }
 
+    /**
+     * Converts the four HSLA components, each in the 0.0 to 1.0 range, to RGB values, and uses those RGB values for
+     * each pixel in {@code p}. This leaves alpha as-is.
+     * @param p a Pixmap that will be edited in-place
+     * @param h hue, from 0.0 to 1.0
+     * @param s saturation, from 0.0 to 1.0
+     * @param l lightness, from 0.0 to 1.0
+     */
+    public static void hsl2rgb(final Pixmap p, final float h, final float s, final float l){
+        ByteBuffer buf = p.getPixels();
+        float x = Math.min(Math.max(Math.abs(h * 6f - 3f) - 1f, 0f), 1f);
+        float y = h + (2f / 3f);
+        float z = h + (1f / 3f);
+        y -= (int)y;
+        z -= (int)z;
+        y = Math.min(Math.max(Math.abs(y * 6f - 3f) - 1f, 0f), 1f);
+        z = Math.min(Math.max(Math.abs(z * 6f - 3f) - 1f, 0f), 1f);
+        float v = (l + s * Math.min(l, 1f - l));
+        float d = 2f * (1f - l / (v + 1e-10f));
+        v *= 255f;
+        byte r = (byte)(v * MathUtils.lerp(1f, x, d));
+        byte g = (byte)(v * MathUtils.lerp(1f, y, d));
+        byte b = (byte)(v * MathUtils.lerp(1f, z, d));
 
-    private static Pixmap createFromFrameBuffer(int x, int y, int w, int h) {
-        Gdx.gl.glPixelStorei(GL20.GL_PACK_ALIGNMENT, 1);
-        Pixmap pixmap = new Pixmap(new Gdx2DPixmap(w, h, Gdx2DPixmap.GDX2D_FORMAT_RGBA8888));
-        ByteBuffer pixels = pixmap.getPixels();
-        Gdx.gl.glReadPixels(x, y, w, h, GL20.GL_RGBA, GL20.GL_UNSIGNED_BYTE, pixels);
-        return pixmap;
+        for (int i = 3, n = buf.limit(); i < n; i+=4) {
+            buf.put(i-3, r);
+            buf.put(i-2, g);
+            buf.put(i-1, b);
+        }
+        buf.flip();
     }
 
     /**
