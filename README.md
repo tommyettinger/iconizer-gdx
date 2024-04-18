@@ -8,11 +8,11 @@ Not in the slightest.
 
 They look like this:
 
-![Sample 1](docs/6189721003066403328.png)
-![Sample 2](docs/-3867001761493189775.png)
-![Sample 3](docs/6615691035041404532.png)
-![Sample 4](docs/2487904915897159277.png)
-![Sample 5](docs/-8541128500453779001.png)
+![Sample 1](docs/120019872205304523.png)
+![Sample 2](docs/3676769053543825444.png)
+![Sample 3](docs/4626224534422258712.png)
+![Sample 4](docs/-1823145208856537873.png)
+![Sample 5](docs/-7309531037278350805.png)
 
 
 ## Why would I want to use this, then?
@@ -29,7 +29,7 @@ you submit to the Play Store*, but in case you don't, this acts as a safeguard.
 Really? OK, this goes in your core dependencies.
 
 ```groovy
-implementation 'com.github.tommyettinger:iconizer-gdx:0.0.3'
+implementation 'com.github.tommyettinger:iconizer-gdx:0.1.0'
 ```
 
 This probably won't work if you're using GL30 compatibility mode; thankfully
@@ -39,7 +39,7 @@ This might work on GWT, but I'm not holding my breath. If GWT does work,
 then you would use this in your html dependencies:
 
 ```groovy
-implementation 'com.github.tommyettinger:iconizer-gdx:0.0.3:sources'
+implementation 'com.github.tommyettinger:iconizer-gdx:0.1.0:sources'
 ```
 
 You will also need this GWT inherits line in your GdxDefinition.gwt.xml file:
