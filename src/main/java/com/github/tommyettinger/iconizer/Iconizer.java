@@ -770,12 +770,12 @@ public final class Iconizer {
         o.setColor(-1);
 
         int full = l.getWidth();
-        int hf = width / 2;
+        int hf = full / 2;
 
         o.setColor(fgColor1);
-        o.drawPixmap(l, 0, 0, hf, height, 0, 0, hf, full);
+        o.drawPixmap(l, 0, 0, hf, full, 0, 0, width/2, height);
         o.setColor(fgColor2);
-        o.drawPixmap(m, hf, 0, hf, height, hf, 0, hf, full);
+        o.drawPixmap(m, hf, 0, hf, full, width/2, 0, width/2, height);
 
         return o;
     }

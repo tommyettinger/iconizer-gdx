@@ -18,25 +18,16 @@ package com.github.tommyettinger.iconizer;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.Input;
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3Application;
-import com.badlogic.gdx.backends.lwjgl3.Lwjgl3ApplicationConfiguration;
-import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.backends.headless.HeadlessApplication;
+import com.badlogic.gdx.backends.headless.HeadlessApplicationConfiguration;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.PixmapIO;
-import com.badlogic.gdx.graphics.Texture;
-import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.utils.TimeUtils;
-import com.badlogic.gdx.utils.viewport.ScreenViewport;
-import com.badlogic.gdx.utils.viewport.Viewport;
 
 import java.io.IOException;
 
-import static com.badlogic.gdx.Gdx.input;
-
 public class BasicOutputDemo extends ApplicationAdapter {
-    public static final int SCREEN_WIDTH = 72;
-    public static final int SCREEN_HEIGHT = 72;
+    public static final int SCREEN_WIDTH = 96;
+    public static final int SCREEN_HEIGHT = 96;
     private final String[] args;
 
     public BasicOutputDemo(String[] arg) {
@@ -44,14 +35,9 @@ public class BasicOutputDemo extends ApplicationAdapter {
     }
 
     public static void main(String[] arg) {
-        Lwjgl3ApplicationConfiguration config = new Lwjgl3ApplicationConfiguration();
-        config.setTitle("Basic Output Demo");
-        config.setWindowedMode(SCREEN_WIDTH, SCREEN_HEIGHT);
-        config.setIdleFPS(10);
-        config.useVsync(true);
-        config.disableAudio(true);
+        HeadlessApplicationConfiguration config = new HeadlessApplicationConfiguration();
         final BasicOutputDemo app = new BasicOutputDemo(arg);
-        new Lwjgl3Application(app, config);
+        new HeadlessApplication(app, config);
     }
 
     @Override
@@ -63,7 +49,7 @@ public class BasicOutputDemo extends ApplicationAdapter {
         long seed = args == null || args.length == 0
                 ? Iconizer.scramble(System.nanoTime())
                 : Iconizer.scrambleAll((Object[]) args);
-        Pixmap icon = iconizer.generate(72, 72, seed);
+        Pixmap icon = iconizer.generate(SCREEN_WIDTH, SCREEN_HEIGHT, seed);
         try {
             png.write(Gdx.files.local(seed + ".png"), icon);
         } catch (IOException e) {
